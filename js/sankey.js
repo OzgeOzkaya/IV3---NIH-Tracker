@@ -2,11 +2,11 @@ function createSankey() {
     // Dummy data for the Sankey diagram
     const data = {
         nodes: [
-            { name: "A" },
-            { name: "B" },
-            { name: "C" },
-            { name: "D" },
-            { name: "E" }
+            { name: "MINNEAPOLIS VA  MEDICAL CENTER" },
+            { name: "TUWIEN" },
+            { name: "UNIVERSITY OF TORONTO" },
+            { name: "CAMBRIDGE" },
+            { name: "ODTU" }
         ],
         links: [
             { source: 0, target: 1, value: 10 },
