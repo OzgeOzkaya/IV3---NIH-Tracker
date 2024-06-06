@@ -3,11 +3,11 @@ function createBarChart(barData = []) {
     // Default to show all organizations
     if (barData.length === 0) {
         barData = dataset.reduce((acc, curr) => {
-            const org = acc.find(d => d.name === curr.ORG_NAME);
+            const org = acc.find(d => d.name === curr.IC_NAME);
             if (org) {
                 org.value += curr.TOTAL_COST;
             } else {
-                acc.push({ name: curr.ORG_NAME, value: curr.TOTAL_COST });
+                acc.push({ name: curr.IC_NAME, value: curr.TOTAL_COST });
             }
             return acc;
         }, []);
@@ -70,6 +70,12 @@ function createBarChart(barData = []) {
         .on("mouseout", function(event, d) {
             tooltip.style("display", "none");
             d3.select(this).attr("fill", primaryColor);
+        })
+        .on("click", function(event, d) {
+            const orgData = dataset.find(data => data.IC_NAME === d.name);
+            if (orgData) {
+                updateWorldMap(orgData.ORG_COUNTRY);
+            }
         });
 
     svg.append("g").call(d3.axisLeft(y));

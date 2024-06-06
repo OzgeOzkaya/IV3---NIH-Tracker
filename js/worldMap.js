@@ -95,6 +95,11 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
             return worldData[countryCode] ? colorScale(worldData[countryCode].fundedAvg) : '#b8b8b8';
         });
     }
+
+    window.updateWorldMap = function(countryCode) {
+        selectedCountry = countryCode;
+        updateMapColors();
+    }
 });
 
 function updateBarChart(countryCode) {
