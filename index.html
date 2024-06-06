@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualization Project</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="filter-container">
+            <select id="filter1">
+                <option value="">Filter 1</option>
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+            </select>
+            <select id="filter2">
+                <option value="">Filter 2</option>
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+            </select>
+            <select id="filter3">
+                <option value="">Filter 3</option>
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+            </select>
+            <select id="filter4">
+                <option value="">Filter 4</option>
+                <option value="1">Option 1</option>
+                <option value="2">Option 2</option>
+                <option value="3">Option 3</option>
+            </select>
+            <button id="filter-button">Filter</button>
+        </div>
+        <div class="container">
+            <div class="chart" id="world-map"></div>
+            <div class="chart-container">
+                <div class="chart" id="bar-chart"></div>
+                <div class="chart" id="treemap"></div>
+            </div>
+            <div class="chart" id="line-chart"></div>
+            <div class="chart" id="sankey"></div>
+        </div>
+    </div>
+    
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/worldMap.js"></script>
+    <script src="js/barChart.js"></script>
+    <script src="js/treemap.js"></script>
+    <script src="js/lineChart.js"></script>
+    <script src="js/sankey.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

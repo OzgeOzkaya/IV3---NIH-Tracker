@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.main-container {
+    width: 95%;
+    margin: auto;
+    max-width: 1200px;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.filter-container select {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.filter-container button {
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    gap: 10px;
+}
+
+.chart {
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+#bar-chart {
+    height: 300px; /* Adjust height as needed */
+    overflow-y: auto;
+}
+
+.scrollable-content {
+    display: block;
+}
+
+.chart svg {
+    width: 100%;
+}
+
+#world-map {
+    height: 400px;
+}
+
+.chart-container {
+    display: flex;
+    gap: 10px;
+}
+
+#bar-chart, #treemap {
+    height: 300px;
+    flex: 1;
+}
+
+#line-chart {
+    height: 300px;
+}
+
+#sankey {
+    height: 400px;
+}
+
+.tooltip {
+    font-size: 14px;
+    color: #333;
+}
