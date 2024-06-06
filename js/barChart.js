@@ -13,7 +13,7 @@ function createBarChart(barData = []) {
         }, []);
     }
 
-    const margin = { top: 20, right: 30, bottom: 40, left: 150 };
+    const margin = { top: 40, right: 30, bottom: 40, left: 150 }; // Increased top margin to make space for the title
     const width = document.getElementById('bar-chart').clientWidth - margin.left - margin.right;
     const barHeight = 30; // height of each bar including padding
     const chartHeight = barData.length * barHeight;
@@ -27,6 +27,15 @@ function createBarChart(barData = []) {
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    // Add title
+    svg.append("text")
+        .attr("x", width / 2 - 50)
+        .attr("y", -20)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text("Funder NIH Institute or Center");
+
     const x = d3.scaleLinear()
         .domain([0, d3.max(barData, d => d.value) || 0])
         .range([0, width]);
@@ -35,6 +44,9 @@ function createBarChart(barData = []) {
         .range([0, chartHeight])
         .domain(barData.map(d => d.name))
         .padding(.1);
+
+    // Color scale
+    const color = d3.scaleOrdinal(d3.schemeTableau10);
 
     // Tooltip setup
     const tooltip = d3.select("body").append("div")
@@ -55,7 +67,7 @@ function createBarChart(barData = []) {
         .attr("y", d => y(d.name))
         .attr("width", d => x(d.value))
         .attr("height", y.bandwidth())
-        .attr("fill", primaryColor)
+        .attr("fill", d => color(d.name))
         .on("mouseover", function(event, d) {
             tooltip
                 .html(`<strong>${d.name}</strong><br>Funded Average Amount: $${d.value}`)
@@ -69,7 +81,7 @@ function createBarChart(barData = []) {
         })
         .on("mouseout", function(event, d) {
             tooltip.style("display", "none");
-            d3.select(this).attr("fill", primaryColor);
+            d3.select(this).attr("fill", d => color(d.name));
         })
         .on("click", function(event, d) {
             const orgData = dataset.find(data => data.IC_NAME === d.name);

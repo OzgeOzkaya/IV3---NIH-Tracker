@@ -1,3 +1,5 @@
+let selectedICName = null;
+
 // Dimensions and map setup
 const width = document.getElementById('world-map').clientWidth;
 const height = document.getElementById('world-map').clientHeight;
@@ -18,6 +20,15 @@ const svg = d3.select("#world-map").append("svg")
     .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("preserveAspectRatio", "xMidYMid meet");
 
+// Add title
+svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", 20)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "bold")
+    .text("Countries Received Funds");
+
 // Tooltip setup
 const tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
@@ -35,7 +46,7 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
     // Create a color scale
     const colorScale = d3.scaleSequential()
         .domain([0, d3.max(Object.values(worldData), d => d.fundedAvg)])
-        .interpolator(d3.interpolateBlues);
+        .interpolator(d3.interpolateOrRd);
 
     // Draw the map
     const countries = svg.append("g")
@@ -96,8 +107,18 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
         });
     }
 
+    function isCountrySelectedByIC(countryCode, icName) {
+        return dataset.some(d => d.IC_NAME === icName && d.ORG_COUNTRY === countryCode);
+    }
+
     window.updateWorldMap = function(countryCode) {
         selectedCountry = countryCode;
+        updateMapColors();
+    }
+
+    window.updateWorldMapFromBar = function(icName) {
+        selectedICName = icName;
+        selectedCountry = null; // Clear the previously selected country if any
         updateMapColors();
     }
 });
@@ -111,11 +132,11 @@ function updateBarChart(countryCode) {
     }
     
     const barData = filteredData.reduce((acc, curr) => {
-        const org = acc.find(d => d.name === curr.ORG_NAME);
+        const org = acc.find(d => d.name === curr.IC_NAME);
         if (org) {
             org.value += curr.TOTAL_COST;
         } else {
-            acc.push({ name: curr.ORG_NAME, value: curr.TOTAL_COST });
+            acc.push({ name: curr.IC_NAME, value: curr.TOTAL_COST });
         }
         return acc;
     }, []);
