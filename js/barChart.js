@@ -1,3 +1,6 @@
+// Track the currently selected bar
+let selectedBar = null;
+
 // Create the bar chart
 function createBarChart(barData = []) {
     // Default to show all organizations
@@ -13,10 +16,13 @@ function createBarChart(barData = []) {
         }, []);
     }
 
-    const margin = { top: 40, right: 30, bottom: 40, left: 150 }; // Increased top margin to make space for the title
+    // Sort the barData by value
+    barData.sort((a, b) => b.value - a.value);
+
+    const margin = { top: 40, right: -50, bottom: 40, left: 250 }; // Increased left margin to make space for the labels
     const width = document.getElementById('bar-chart').clientWidth - margin.left - margin.right;
     const barHeight = 30; // height of each bar including padding
-    const chartHeight = barData.length * barHeight;
+    const chartHeight = Math.max(barData.length * barHeight, document.getElementById('bar-chart').clientHeight - margin.top - margin.bottom); // Ensure chart height is sufficient
 
     d3.select("#bar-chart svg").remove();
 
@@ -29,7 +35,7 @@ function createBarChart(barData = []) {
 
     // Add title
     svg.append("text")
-        .attr("x", width / 2 - 50)
+        .attr("x", width / 2)
         .attr("y", -20)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
@@ -38,7 +44,7 @@ function createBarChart(barData = []) {
 
     const x = d3.scaleLinear()
         .domain([0, d3.max(barData, d => d.value) || 0])
-        .range([0, width]);
+        .range([0, width * 0.8]); // Reduce the range to make bars narrower
 
     const y = d3.scaleBand()
         .range([0, chartHeight])
@@ -59,7 +65,7 @@ function createBarChart(barData = []) {
         .style("padding", "10px")
         .style("display", "none");
 
-    svg.selectAll("rect")
+    const bars = svg.selectAll("rect")
         .data(barData)
         .enter()
         .append("rect")
@@ -81,16 +87,42 @@ function createBarChart(barData = []) {
         })
         .on("mouseout", function(event, d) {
             tooltip.style("display", "none");
-            d3.select(this).attr("fill", d => color(d.name));
+            if (d !== selectedBar) {
+                d3.select(this).attr("fill", d => color(d.name));
+            }
         })
         .on("click", function(event, d) {
-            const orgData = dataset.find(data => data.IC_NAME === d.name);
-            if (orgData) {
-                updateWorldMap(orgData.ORG_COUNTRY);
+            // Update selected bar
+            if (selectedBar === d) {
+                selectedBar = null;
+                updateWorldMap(null);
+            } else {
+                selectedBar = d;
+                const orgData = dataset.find(data => data.IC_NAME === d.name);
+                if (orgData) {
+                    updateWorldMap(orgData.ORG_COUNTRY);
+                }
             }
+            updateBarColors();
         });
 
-    svg.append("g").call(d3.axisLeft(y));
+    function updateBarColors() {
+        bars.attr("fill", function(d) {
+            if (d === selectedBar) {
+                return color(d.name);
+            } else if (selectedBar) {
+                return "#ccc"; // Faded color
+            } else {
+                return color(d.name);
+            }
+        });
+    }
+
+    svg.append("g")
+        .call(d3.axisLeft(y))
+        .selectAll("text")
+        .style("font-size", "10px"); // Adjust the font size here
+
     svg.append("g").attr("transform", `translate(0, ${chartHeight})`).call(d3.axisBottom(x));
 }
 

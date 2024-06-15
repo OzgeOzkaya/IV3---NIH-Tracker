@@ -27,6 +27,9 @@ body {
     height: 100%;
     padding: 10px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .right-half {
@@ -47,29 +50,31 @@ body {
     overflow: hidden;
 }
 
+#world-map {
+    flex: 6; /* 60% of the left container */
+    height: 70%; /* Reduced height */
+}
+
+#line-chart {
+    flex: 4; /* 40% of the left container */
+    height: 30%; /* Reduced height */
+}
+
 #bar-chart {
     height: 300px; /* Adjust height as needed */
-    overflow-y: auto;
+    overflow-y: auto; /* Make the bar chart scrollable */
 }
 
-.scrollable-content {
-    display: block;
-}
-
-.chart svg {
-    width: 100%;
-}
-
-#world-map {
-    height: 100%; /* Adjust height as needed */
-}
-
-#treemap, #line-chart, #sankey {
-    height: 00px; /* Adjust height as needed */
+#treemap, #average-line-chart {
+    height: 300px; /* Adjust height as needed */
     flex: 1;
 }
 
 .tooltip {
     font-size: 14px;
     color: #333;
+}
+
+.chart svg {
+    width: 100%;
 }

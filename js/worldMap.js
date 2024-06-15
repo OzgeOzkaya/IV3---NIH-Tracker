@@ -90,25 +90,27 @@ d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/w
             if (selectedCountry === countryCode) {
                 selectedCountry = null;
                 updateBarChart(null);
+                updateTreemap(null);
+                updateLineChart(null);
             } else {
                 selectedCountry = countryCode;
                 updateBarChart(countryCode);
+                updateTreemap(countryCode);
+                updateLineChart(countryCode);
             }
             updateMapColors(); // Ensure the map colors are updated immediately
         });
 
     function updateMapColors() {
-        countries.attr("fill", d => {
-            if (d.id === selectedCountry) {
-                return selectedColor;
-            }
-            const countryCode = d.id;
-            return worldData[countryCode] ? colorScale(worldData[countryCode].fundedAvg) : '#b8b8b8';
-        });
-    }
-
-    function isCountrySelectedByIC(countryCode, icName) {
-        return dataset.some(d => d.IC_NAME === icName && d.ORG_COUNTRY === countryCode);
+        countries
+            .attr("fill", d => {
+                if (d.id === selectedCountry) {
+                    return selectedColor;
+                }
+                const countryCode = d.id;
+                return worldData[countryCode] ? colorScale(worldData[countryCode].fundedAvg) : '#b8b8b8';
+            })
+            .style("opacity", d => (selectedCountry && d.id !== selectedCountry) ? 0.3 : 1);
     }
 
     window.updateWorldMap = function(countryCode) {
@@ -142,4 +144,41 @@ function updateBarChart(countryCode) {
     }, []);
     
     createBarChart(barData);
+}
+
+function updateTreemap(countryCode) {
+    let filteredData;
+    if (countryCode) {
+        filteredData = dataset.filter(d => d.ORG_COUNTRY === countryCode);
+    } else {
+        filteredData = dataset;
+    }
+
+    const treemapData = filteredData.reduce((acc, curr) => {
+        const term = acc.find(d => d.name === curr.PROJECT_TERMS);
+        if (term) {
+            term.value += curr.TOTAL_COST;
+        } else {
+            acc.push({ name: curr.PROJECT_TERMS, value: curr.TOTAL_COST });
+        }
+        return acc;
+    }, []);
+
+    createTreemap(treemapData);
+}
+
+function updateLineChart(countryCode) {
+    let filteredData;
+    if (countryCode) {
+        filteredData = dataset.filter(d => d.ORG_COUNTRY === countryCode);
+    } else {
+        filteredData = dataset;
+    }
+
+    const lineData = d3.groups(filteredData, d => d.FY).map(([key, values]) => {
+        const avg = d3.mean(values, d => d.TOTAL_COST);
+        return { year: key, avgCost: avg };
+    });
+
+    createAverageLineChart(lineData);
 }

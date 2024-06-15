@@ -1,24 +1,21 @@
-// Create the treemap chart
-function createTreemap() {
-    const data = {
-        name: "root",
-        children: [
-            { name: "Chronic pain patient", value: 200 },
-            { name: "Clinic", value: 190 },
-            { name: "Cognitive function", value: 165 },
-            { name: "Candidate Disease", value: 160 },
-            { name: "Histology", value: 155 },
-            { name: "Epigenetic Process", value: 120 },
-            { name: "Functional disorder", value: 112 },
-            { name: "DLG4 gene", value: 90 },
-            { name: "Constriction", value: 89 },
-            { name: "Biological Models", value: 56 },
-            { name: "Behavioral Medicine", value: 45 }
-        ]
+function createTreemap(data = []) {
+    // Default to show all project terms
+    if (data.length === 0) {
+        data = dataset.reduce((acc, curr) => {
+            const term = acc.find(d => d.name === curr.PROJECT_TERMS);
+            if (term) {
+                term.value += curr.TOTAL_COST;
+            } else {
+                acc.push({ name: curr.PROJECT_TERMS, value: curr.TOTAL_COST });
+            }
+            return acc;
+        }, []);
     }
 
     const width = document.getElementById('treemap').clientWidth;
     const height = document.getElementById('treemap').clientHeight;
+
+    d3.select("#treemap svg").remove();
 
     const svg = d3.select("#treemap").append("svg")
         .attr("width", width)
@@ -26,19 +23,10 @@ function createTreemap() {
         .append("g")
         .attr("transform", "translate(0,0)");
 
-    // Add title
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", 20)
-        .attr("text-anchor", "middle")
-        .style("font-size", "16px")
-        .style("font-weight", "bold")
-        .text("Funded Application Areas");
-
-    const root = d3.hierarchy(data).sum(d => d.value);
+    const root = d3.hierarchy({ name: "root", children: data }).sum(d => d.value);
 
     d3.treemap()
-        .size([width, height - 30])  // Adjust size to account for title
+        .size([width, height])
         .padding(2)(root);
 
     // Color scale
@@ -59,7 +47,7 @@ function createTreemap() {
         .enter()
         .append("rect")
         .attr("x", d => d.x0)
-        .attr("y", d => d.y0 + 30)  // Adjust position to account for title
+        .attr("y", d => d.y0)
         .attr("width", d => d.x1 - d.x0)
         .attr("height", d => d.y1 - d.y0)
         .style("fill", d => color(d.data.name))
@@ -84,24 +72,10 @@ function createTreemap() {
         .enter()
         .append("text")
         .attr("x", d => d.x0 + 5)
-        .attr("y", d => d.y0 + 45)  // Adjust position to account for title
+        .attr("y", d => d.y0 + 20)
         .text(d => d.data.name)
-        .attr("font-size", "12px")
-        .attr("fill", "white")
-        .attr("clip-path", d => `url(#clip-${d.data.name.replace(/\s+/g, '-')})`);  // Add clip-path to ensure text stays within bounds
-
-    // Add clip-paths for text elements
-    svg.selectAll("defs")
-        .data(root.leaves())
-        .enter()
-        .append("defs")
-        .append("clipPath")
-        .attr("id", d => `clip-${d.data.name.replace(/\s+/g, '-')}`)
-        .append("rect")
-        .attr("x", d => d.x0 + 5)
-        .attr("y", d => d.y0 + 30)
-        .attr("width", d => d.x1 - d.x0 - 10)
-        .attr("height", d => d.y1 - d.y0);
+        .attr("font-size", "10px")
+        .attr("fill", "white");
 }
 
 createTreemap();
