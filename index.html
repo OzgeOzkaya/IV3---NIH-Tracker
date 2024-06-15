@@ -3,28 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Visualization Project</title>
+    <title>NIH Tracker</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="icon" href="https://www.cg.tuwien.ac.at/TU-Wien.svg" type="image/x-icon"> <!-- Add this line -->
+
+    <style>
+        .filter-container {
+            display: flex;
+            gap: 10px; /* Adjust the gap as needed */
+            flex-wrap: wrap; /* Allow filters to wrap to the next line if needed */
+            margin-bottom: 20px; /* Add some space below the filter container */
+        }
+        .filter-input {
+            flex: 1;
+            min-width: 150px; /* Adjust the minimum width as needed */
+        }
+        .icon-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
     <div class="filter-container">
-        <select id="funded-country" class="filter-dropdown">
-            <option value="">Funded Country</option>
-        </select>
-        <select id="org-name" class="filter-dropdown">
-            <option value="">Funded Organization</option>
-        </select>
-        
-        <select id="project-terms" class="filter-dropdown">
-            <option value="">Project Terms</option>
-        </select>
-        <select id="ic-name" class="filter-dropdown">
-            <option value="">Funder NIH Instute or Center</option>
-        </select>
-        <select id="year" class="filter-dropdown">
-            <option value="">Year</option>
-        </select>
-        
+        <input id="funded-country" class="filter-input" list="funded-country-list" placeholder="Filter by Funded Country">
+        <datalist id="funded-country-list"></datalist>
+
+        <input id="org-name" class="filter-input" list="org-name-list" placeholder="Filter by Funded Organization">
+        <datalist id="org-name-list"></datalist>
+
+        <input id="project-terms" class="filter-input" list="project-terms-list" placeholder="Filter by Project Terms">
+        <datalist id="project-terms-list"></datalist>
+
+        <input id="ic-name" class="filter-input" list="ic-name-list" placeholder="Filter by Funder NIH Institute or Center">
+        <datalist id="ic-name-list"></datalist>
+
+        <input id="year" class="filter-input" list="year-list" placeholder="Filter by Year">
+        <datalist id="year-list"></datalist>
+
+        <button id="reset-filters" class="icon-button"><i class="fas fa-redo"></i></button>
+        <button id="download-data" class="icon-button"><i class="fas fa-download"></i></button>
     </div>
     <div class="main-container">
         <div class="container">
@@ -40,11 +60,12 @@
     </div>
     
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="js/data.js"></script>
     <script src="js/worldMap.js"></script>
     <script src="js/barChart.js"></script>
     <script src="js/treemap.js"></script>
     <script src="js/averageLineChart.js"></script>
-    <script src="js/filters.js"></script> <!-- Add this new script -->
+    <script src="js/filters.js"></script>
 </body>
 </html>

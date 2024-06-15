@@ -6,11 +6,15 @@ body {
 }
 
 .filter-container {
-    display: flex;
+    flex: 1;
+    width: 95%;
+    margin: 0 auto 1px auto;
+    max-width: 1800px;
     justify-content: center;
     padding: 20px;
     background-color: #ffffff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
 
 .filter-dropdown {
@@ -20,12 +24,10 @@ body {
 }
 
 .main-container {
-    flex: 1;
     width: 95%;
     margin: 0 auto 1px auto;
     max-width: 1800px;
     background-color: white;
-    padding: 40px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
 }
@@ -91,4 +93,20 @@ body {
 
 .chart svg {
     width: 100%;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    margin-left: 10px;
+}
+
+.icon-button i {
+    color: #333; /* Change this to your preferred color */
+}
+
+.icon-button:hover i {
+    color: #007bff; /* Change this to your preferred hover color */
 }

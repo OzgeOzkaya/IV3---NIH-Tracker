@@ -16,7 +16,7 @@ function createBarChart(filteredData = null) {
     // Clear existing chart
     d3.select("#bar-chart svg").remove();
 
-    const margin = { top: 40, right: -50, bottom: 40, left: 50 };
+    const margin = { top: 40, right: -50, bottom: 40, left: 50   };
     const width = document.getElementById('bar-chart').clientWidth - margin.left - margin.right;
     const barHeight = 30;
     const chartHeight = Math.max(barData.length * barHeight, document.getElementById('bar-chart').clientHeight - margin.top - margin.bottom);
@@ -29,7 +29,7 @@ function createBarChart(filteredData = null) {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     svg.append("text")
-        .attr("x", width / 2)
+        .attr("x", width / 2 - 50)
         .attr("y", -20)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")

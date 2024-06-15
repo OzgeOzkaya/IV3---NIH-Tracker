@@ -40,14 +40,14 @@ function createWorldMap(filteredData = null) {
     // Load external data and create the map
     d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then(function(worldGeojson) {
 
-        // Process filtered data to get the funded average by country
+        // Process filtered data to get the funded average and org names by country
         const worldDataFiltered = {};
         data.forEach(d => {
             if (worldDataFiltered[d.ORG_COUNTRY]) {
-                worldDataFiltered[d.ORG_COUNTRY].fundedAvg += d.TOTAL_COST;
+                worldDataFiltered[d.ORG_COUNTRY].orgNames.push(d.ORG_NAME);
             } else {
                 worldDataFiltered[d.ORG_COUNTRY] = {
-                    fundedAvg: d.TOTAL_COST,
+                    orgNames: [d.ORG_NAME],
                     countryName: d.ORG_COUNTRY
                 };
             }
@@ -55,7 +55,7 @@ function createWorldMap(filteredData = null) {
 
         // Create a color scale
         const colorScale = d3.scaleSequential()
-            .domain([0, d3.max(Object.values(worldDataFiltered), d => d.fundedAvg)])
+            .domain([0, d3.max(Object.values(worldDataFiltered), d => d.orgNames.length)])
             .interpolator(d3.interpolateOrRd);
 
         // Draw the map
@@ -67,15 +67,16 @@ function createWorldMap(filteredData = null) {
             .attr("d", d3.geoPath().projection(projection))
             .attr("fill", d => {
                 const countryCode = d.id;
-                return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].fundedAvg) : '#b8b8b8';
+                return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].orgNames.length) : '#b8b8b8';
             })
             .style("stroke", "black")
             .style("opacity", .8)
             .on("mouseover", function(event, d) {
                 const countryCode = d.id;
                 if (worldDataFiltered[countryCode]) {
+                    const orgNamesList = worldDataFiltered[countryCode].orgNames.map(name => `<li>${name}</li>`).join('');
                     tooltip
-                        .html(`<strong>${worldDataFiltered[countryCode].countryName}</strong><br>Funded Average Amount: $${worldDataFiltered[countryCode].fundedAvg}`)
+                        .html(`<strong>${worldDataFiltered[countryCode].countryName}</strong><br><strong>Organizations:</strong><ul>${orgNamesList}</ul>`)
                         .style("display", "block");
                     d3.select(this).style("opacity", 1).style("stroke-width", 2).style("fill", '#e41a1c');
                 }
@@ -92,7 +93,7 @@ function createWorldMap(filteredData = null) {
                         return '#ffcc00';
                     }
                     const countryCode = d.id;
-                    return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].fundedAvg) : '#b8b8b8';
+                    return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].orgNames.length) : '#b8b8b8';
                 });
             })
             .on("click", function(event, d) {
@@ -118,7 +119,7 @@ function createWorldMap(filteredData = null) {
                         return '#ffcc00';
                     }
                     const countryCode = d.id;
-                    return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].fundedAvg) : '#b8b8b8';
+                    return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].orgNames.length) : '#b8b8b8';
                 })
                 .style("opacity", d => (selectedCountry && d.id !== selectedCountry) ? 0.3 : 1);
         }

@@ -1,14 +1,27 @@
 function createTreemap(filteredData = null) {
     const data = filteredData ? filteredData : dataset;
-    const treemapData = data.reduce((acc, curr) => {
-        const term = acc.find(d => d.name === curr.PROJECT_TERMS);
-        if (term) {
-            term.value += curr.TOTAL_COST;
-        } else {
-            acc.push({ name: curr.PROJECT_TERMS, value: curr.TOTAL_COST });
-        }
-        return acc;
-    }, []);
+
+    // Create a map to calculate the average total cost for each project term
+    const termSums = {};
+    const termCounts = {};
+
+    data.forEach(curr => {
+        curr.PROJECT_TERMS.forEach(term => {
+            if (termSums[term]) {
+                termSums[term] += curr.TOTAL_COST;
+                termCounts[term] += 1;
+            } else {
+                termSums[term] = curr.TOTAL_COST;
+                termCounts[term] = 1;
+            }
+        });
+    });
+
+    // Convert the termSums and termCounts maps to an array of objects for the treemap
+    const treemapData = Object.keys(termSums).map(term => ({
+        name: term,
+        value: termSums[term] / termCounts[term] // Calculate the average total cost
+    })).sort((a, b) => b.value - a.value);
 
     const width = document.getElementById('treemap').clientWidth;
     const height = document.getElementById('treemap').clientHeight;
@@ -17,14 +30,24 @@ function createTreemap(filteredData = null) {
 
     const svg = d3.select("#treemap").append("svg")
         .attr("width", width)
-        .attr("height", height)
-        .append("g")
-        .attr("transform", "translate(0,0)");
+        .attr("height", height);
+
+    // Add title
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", 20)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text("Project Term Distribution");
+
+    const treemapGroup = svg.append("g")
+        .attr("transform", "translate(0,30)"); // Adjust the translation to account for the title height
 
     const root = d3.hierarchy({ name: "root", children: treemapData }).sum(d => d.value);
 
     d3.treemap()
-        .size([width, height])
+        .size([width, height - 30]) // Adjust the height to account for the title height
         .padding(2)(root);
 
     const color = d3.scaleOrdinal(d3.schemeTableau10);
@@ -39,7 +62,7 @@ function createTreemap(filteredData = null) {
         .style("padding", "10px")
         .style("display", "none");
 
-    const nodes = svg.selectAll("rect")
+    const nodes = treemapGroup.selectAll("rect")
         .data(root.leaves())
         .enter()
         .append("rect")
@@ -50,7 +73,7 @@ function createTreemap(filteredData = null) {
         .style("fill", d => color(d.data.name))
         .on("mouseover", function(event, d) {
             tooltip
-                .html(`<strong>${d.data.name}</strong><br>Value: ${d.data.value}`)
+                .html(`<strong>${d.data.name}</strong><br>Avg Total Cost: $${d3.format(",.2f")(d.data.value)}`)
                 .style("display", "block");
             d3.select(this).attr("opacity", 0.7);
         })
@@ -64,7 +87,7 @@ function createTreemap(filteredData = null) {
             d3.select(this).attr("opacity", 1);
         });
 
-    svg.selectAll("text")
+    treemapGroup.selectAll("text")
         .data(root.leaves())
         .enter()
         .append("text")
