@@ -1,16 +1,14 @@
-function createTreemap(data = []) {
-    // Default to show all project terms
-    if (data.length === 0) {
-        data = dataset.reduce((acc, curr) => {
-            const term = acc.find(d => d.name === curr.PROJECT_TERMS);
-            if (term) {
-                term.value += curr.TOTAL_COST;
-            } else {
-                acc.push({ name: curr.PROJECT_TERMS, value: curr.TOTAL_COST });
-            }
-            return acc;
-        }, []);
-    }
+function createTreemap(filteredData = null) {
+    const data = filteredData ? filteredData : dataset;
+    const treemapData = data.reduce((acc, curr) => {
+        const term = acc.find(d => d.name === curr.PROJECT_TERMS);
+        if (term) {
+            term.value += curr.TOTAL_COST;
+        } else {
+            acc.push({ name: curr.PROJECT_TERMS, value: curr.TOTAL_COST });
+        }
+        return acc;
+    }, []);
 
     const width = document.getElementById('treemap').clientWidth;
     const height = document.getElementById('treemap').clientHeight;
@@ -23,13 +21,12 @@ function createTreemap(data = []) {
         .append("g")
         .attr("transform", "translate(0,0)");
 
-    const root = d3.hierarchy({ name: "root", children: data }).sum(d => d.value);
+    const root = d3.hierarchy({ name: "root", children: treemapData }).sum(d => d.value);
 
     d3.treemap()
         .size([width, height])
         .padding(2)(root);
 
-    // Color scale
     const color = d3.scaleOrdinal(d3.schemeTableau10);
 
     const tooltip = d3.select("body").append("div")

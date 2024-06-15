@@ -7,6 +7,25 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <div class="filter-container">
+        <select id="funded-country" class="filter-dropdown">
+            <option value="">Funded Country</option>
+        </select>
+        <select id="org-name" class="filter-dropdown">
+            <option value="">Funded Organization</option>
+        </select>
+        
+        <select id="project-terms" class="filter-dropdown">
+            <option value="">Project Terms</option>
+        </select>
+        <select id="ic-name" class="filter-dropdown">
+            <option value="">Funder NIH Instute or Center</option>
+        </select>
+        <select id="year" class="filter-dropdown">
+            <option value="">Year</option>
+        </select>
+        
+    </div>
     <div class="main-container">
         <div class="container">
             <div class="left-half">
@@ -25,8 +44,7 @@
     <script src="js/worldMap.js"></script>
     <script src="js/barChart.js"></script>
     <script src="js/treemap.js"></script>
-    <script src="js/lineChart.js"></script>
     <script src="js/averageLineChart.js"></script>
-    <script src="js/table.js"></script>
+    <script src="js/filters.js"></script> <!-- Add this new script -->
 </body>
 </html>
