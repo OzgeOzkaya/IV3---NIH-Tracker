@@ -48,14 +48,16 @@ function createWorldMap(filteredData = null) {
             } else {
                 worldDataFiltered[d.ORG_COUNTRY] = {
                     orgNames: [d.ORG_NAME],
-                    countryName: d.ORG_COUNTRY
+                    countryName: d.ORG_COUNTRY,
+                    count: 0
                 };
             }
+            worldDataFiltered[d.ORG_COUNTRY].count += 1;
         });
 
         // Create a color scale
         const colorScale = d3.scaleSequential()
-            .domain([0, d3.max(Object.values(worldDataFiltered), d => d.orgNames.length)])
+            .domain([0, d3.max(Object.values(worldDataFiltered), d => d.count)])
             .interpolator(d3.interpolateOrRd);
 
         // Draw the map
@@ -67,16 +69,17 @@ function createWorldMap(filteredData = null) {
             .attr("d", d3.geoPath().projection(projection))
             .attr("fill", d => {
                 const countryCode = d.id;
-                return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].orgNames.length) : '#b8b8b8';
+                return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].count) : '#b8b8b8';
             })
             .style("stroke", "black")
             .style("opacity", .8)
             .on("mouseover", function(event, d) {
                 const countryCode = d.id;
                 if (worldDataFiltered[countryCode]) {
-                    const orgNamesList = worldDataFiltered[countryCode].orgNames.map(name => `<li>${name}</li>`).join('');
+                    const uniqueOrgNames = [...new Set(worldDataFiltered[countryCode].orgNames)];
+                    const orgNamesList = uniqueOrgNames.map(name => `<li>${name}</li>`).join('');
                     tooltip
-                        .html(`<strong>${worldDataFiltered[countryCode].countryName}</strong><br><strong>Organizations:</strong><ul>${orgNamesList}</ul>`)
+                        .html(`<strong>${worldDataFiltered[countryCode].countryName}</strong><br><strong>Organizations:</strong><ul>${orgNamesList}</ul><br><strong>Count:</strong> ${worldDataFiltered[countryCode].count}`)
                         .style("display", "block");
                     d3.select(this).style("opacity", 1).style("stroke-width", 2).style("fill", '#e41a1c');
                 }
@@ -93,7 +96,7 @@ function createWorldMap(filteredData = null) {
                         return '#ffcc00';
                     }
                     const countryCode = d.id;
-                    return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].orgNames.length) : '#b8b8b8';
+                    return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].count) : '#b8b8b8';
                 });
             })
             .on("click", function(event, d) {
@@ -119,7 +122,7 @@ function createWorldMap(filteredData = null) {
                         return '#ffcc00';
                     }
                     const countryCode = d.id;
-                    return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].orgNames.length) : '#b8b8b8';
+                    return worldDataFiltered[countryCode] ? colorScale(worldDataFiltered[countryCode].count) : '#b8b8b8';
                 })
                 .style("opacity", d => (selectedCountry && d.id !== selectedCountry) ? 0.3 : 1);
         }

@@ -1,7 +1,7 @@
 function createTreemap(filteredData = null) {
     const data = filteredData ? filteredData : dataset;
 
-    // Create a map to calculate the average total cost for each project term
+    // Create a map to calculate the average total cost and count for each project term
     const termSums = {};
     const termCounts = {};
 
@@ -20,8 +20,15 @@ function createTreemap(filteredData = null) {
     // Convert the termSums and termCounts maps to an array of objects for the treemap
     const treemapData = Object.keys(termSums).map(term => ({
         name: term,
-        value: termSums[term] / termCounts[term] // Calculate the average total cost
-    })).sort((a, b) => b.value - a.value);
+        value: termSums[term] / termCounts[term], // Calculate the average total cost
+        count: termCounts[term] // Add the count
+    }));
+
+    // Sort the treemapData by count first, then by average total cost
+    treemapData.sort((a, b) => b.count - a.count || b.value - a.value);
+
+    // Limit the number of terms to at most 50
+    const limitedTreemapData = treemapData.slice(0, 75);
 
     const width = document.getElementById('treemap').clientWidth;
     const height = document.getElementById('treemap').clientHeight;
@@ -44,7 +51,7 @@ function createTreemap(filteredData = null) {
     const treemapGroup = svg.append("g")
         .attr("transform", "translate(0,30)"); // Adjust the translation to account for the title height
 
-    const root = d3.hierarchy({ name: "root", children: treemapData }).sum(d => d.value);
+    const root = d3.hierarchy({ name: "root", children: limitedTreemapData }).sum(d => d.value);
 
     d3.treemap()
         .size([width, height - 30]) // Adjust the height to account for the title height
@@ -73,7 +80,7 @@ function createTreemap(filteredData = null) {
         .style("fill", d => color(d.data.name))
         .on("mouseover", function(event, d) {
             tooltip
-                .html(`<strong>${d.data.name}</strong><br>Avg Total Cost: $${d3.format(",.2f")(d.data.value)}`)
+                .html(`<strong>${d.data.name}</strong><br>Avg Total Cost: $${d3.format(",.2f")(d.data.value)}<br>Count: ${d.data.count}`)
                 .style("display", "block");
             d3.select(this).attr("opacity", 0.7);
         })
